@@ -428,28 +428,34 @@
         </div>
         
         <!-- Modal body -->
-        <div class="modal-body">
-        <table class="table table-dark">
-    <thead>
-      <tr>
-        <th>Nombre</th>
-        <th>Ubicacion</th>
-        <th>Descripcion</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Piscinas Los Patios</td>
-        <td>Cartago, Orosi</td>
-        <td>Piscinas, con amplio parqueo</td>
-      </tr>
+<?php 
 
-      <tr>
-        <td>Museo Nacional</td>
-        <td>San Jose, Montes de Oca</td>
-        <td>Museo con pinturas y arquitectura coloniales</td>
-      </tr>
-      
+    $mysqli = new mysqli("163.178.173.144","multi-paraiso","multimedios.rp.2017", "ADLRtourism");    
+    $resultado = $mysqli->query("SELECT * FROM Lugar");
+?>
+<div class="modal-body">
+    <table class="table table-dark">
+        <thead>
+            <tr>
+            <th>Nombre</th>
+            <th>Provincia</th>
+            <th>Descripcion</th>
+            <th>Tipo lugar</th>
+            <th>Tipo acceso</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php 
+                while($filas= $resultado->fetch_row()){       
+             ?>
+            <tr>
+            <td><<?php echo $filas['nombre'] ?></td>
+            <td><?php echo $filas['provincia'] ?></td>
+            <td><?php echo $filas['descripcion'] ?></td>
+            <td><?php echo $filas['tipoLugar'] ?></td>
+            <td><?php echo $filas['tipoAcceso'] ?></td>
+            </tr>
+            <<?php } ?>
     </tbody>
   </table>
 </div>
@@ -480,35 +486,28 @@
 
 <div class="form-group">
   <label for="provincia">Provincia:</label>
-  <input type="text" class="form-control" id="provincia">
+  <input type="text" class="form-control" name="provincia" id="provincia">
 </div>
 
 <div class="form-group">
-  <label for="canton">Canton:</label>
-  <input type="text" class="form-control" id="canton">
-</div>
+  <label for="lat">Paralelo o Latitud:</label>
+  <input type="text" class="form-control" name="latitud" id="lat">
+    </div>
 
-<div class="form-group">
-  <label for="distrito">Distrito:</label>
-  <input type="text" class="form-control" id="distrito">
-</div>
      </div>
      
      <div class="col-sm-6">
 
      <div class="form-group">
   <label for="nombreLugar">Nombre del Lugar:</label>
-  <input type="text" class="form-control" id="nombreLugar">
+  <input type="text" class="form-control" name="nombre" id="nombreLugar">
     </div>
 
-    <div class="form-group">
-  <label for="lat">Paralelo o Latitud:</label>
-  <input type="text" class="form-control" id="lat">
-    </div>
+    
 
     <div class="form-group">
   <label for="lon">Meridiano o Longitud:</label>
-  <input type="text" class="form-control" id="lon">
+  <input type="text" class="form-control" name="longitud" id="lon">
     </div>
 
      </div>
@@ -519,7 +518,7 @@
      <div class="col-sm-12">
      <div class="form-group">
   <label for="descripcion">Descripcion:</label>
-  <textarea class="form-control" rows="2" id="descripcion"></textarea>
+  <textarea class="form-control" rows="2" name="descripcion" id="descripcion"></textarea>
      </div>
      </div>
      </div>
@@ -528,26 +527,11 @@
 
      <div class="row">
      <div class="col-sm-12">
-     <div class="form-check-inline">
-  <label class="form-check-label">
-    <input type="checkbox" class="form-check-input" value="">Caminando
-  </label>
-</div>
-<div class="form-check-inline">
-  <label class="form-check-label">
-    <input type="checkbox" class="form-check-input" value="">Bicicleta
-  </label>
-</div>
-<div class="form-check-inline">
-  <label class="form-check-label">
-    <input type="checkbox" class="form-check-input" value="">4x4
-  </label>
-</div>
-<div class="form-check-inline">
-  <label class="form-check-label">
-    <input type="checkbox" class="form-check-input" value="">Sedan
-  </label>
-</div>
+     <select class="browser-default custom-select" name="tipoAcceso">
+  <option value="Caminando">Caminando</option>
+  <option value="Bicicleta">Bicicleta</option>
+  <option value="Vehiculo">Vehículo</option>
+</select>
      </div>
      </div>
 
@@ -555,20 +539,11 @@
 
      <div class="row">
      <div class="col-sm-12">
-     <select class="browser-default custom-select">
-  <option value="1">Montaña</option>
-  <option value="2">Playa</option>
-  <option value="3">Ciudad</option>
-  <option value="4">Historico</option>
-  <option value="5">Reserva Natural</option>
+     <select class="browser-default custom-select" name="tipoLugar">
+  <option value="Montaña">Montaña</option>
+  <option value="Playa">Playa</option>
+  <option value="Reserva">Reserva Natural</option>
 </select>
-     </div>
-     </div>
-
-     <label for="acceso">Imagen:</label>
-     <div class="row">
-     <div class="col-sm-12">
-<input type="file" class="form-control-file border">
      </div>
      </div>
      
@@ -582,6 +557,24 @@
     </div>
   </div>
 
+  <<?php 
+    $mysqli = new mysqli("163.178.172.144", "multi-paraiso", "multimedios.rp.2017", "ADLRtourism");    
+    $resultado = $mysqli->query("SELECT * FROM Lugar");
+
+    $provincia = $_GET['nombreLugar'];
+    $nombre = $_GET['nombreLugar'];
+    $latitud = $_GET['latitud'];
+    $longitud = $_GET['longitud'];
+    $descripcion = $_GET['descripcion'];
+    $tipoAcceso = $_GET['tipoAcceso'];
+    $tipoLugar = $_GET['tipoLugar'];
+
+    $sqlInsertar = "INSERT INTO Lugar VALUES('".$provincia."','".$nombre."','".$latitud."','".$longitud."','".$descripcion."','".$tipoAcceso."','".$tipoLugar."')";  
+
+    $mysqli->query($sqlInsertar);                
+
+   ?>
+
   <div class="modal" id="ModalModificarLugar">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -593,9 +586,9 @@
         </div>
         
         <!-- Modal body -->
-        <div class="modal-body">
+<div class="modal-body">
 
-        <label for="idLugar">Seleccione el Lugar a Modificar:</label>
+ <label for="idLugar">Seleccione el Lugar a Modificar:</label>
 
      <div class="row">
      <div class="col-sm-12">
