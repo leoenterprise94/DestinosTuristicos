@@ -67,7 +67,164 @@
             </nav>
             
             <h2>Google Maps</h2>
-            
+
+
+
+<form name="estilo" method="post"  >      
+<div class="form-group">
+<label for="provincia">Provincia:</label>
+<input type="text" class="form-control" name="Provincia" id="idProvincia">
+</div>
+
+<div class="form-group">
+  <label for="provincia">Tipo de actividad:</label>
+  <input type="text" class="form-control" name="Actividad" id="idActividad">
+</div>
+
+<div class="form-group">
+  <label for="provincia">Tipo de acceso:</label>
+  <input type="text" class="form-control"  name="Acceso" id="idAcceso">
+</div>
+  <font size="4"></font><button type="submit" name="calcular" onclick="obtainPlace()">Buscar</button> 
+</form>
+
+<?php 
+error_reporting(E_ERROR | E_WARNING | E_PARSE);
+include("conexion.php");
+$request = "SELECT * FROM Lugar";
+$data = mysqli_query($conexion, $request);
+  $array = array();
+$provincia = $_POST['Provincia'];
+$actividad = $POST['Actividad'];
+$acceso = $_POST['Acceso'];    
+
+ $flag = false;// Primera llave
+ $flagfind = false; //Segunda llave   
+while ($fila = mysqli_fetch_array($data)){
+
+
+
+if($provincia == "Cartago"){
+   $inprovincia = 1;
+}else 
+if($provincia  == "Heredia"){
+  $inprovincia = 2;
+}else
+if($provincia  == "San José"){
+  $inprovincia = 3;
+}else
+if($provincia == "Limón"){
+  $inprovincia = 4;
+}else
+if($provincia  == "Puntarenas"){
+   $inprovincia = 5;
+}else
+if($provincia == "Guanacaste"){
+  $inprovincia = 6;
+}else
+if($provincia  == "Alajuela"){
+   $inprovincia = 7;
+}
+
+if($fila['provincia'] == "Cartago"){
+   $numProvincia = 1;
+}else 
+if($fila['provincia']  == "Heredia"){
+  $numProvincia = 2;
+}else
+if($fila['provincia']  == "San José"){
+  $numProvincia = 3;
+}else
+if($fila['provincia'] == "Limón"){
+  $numProvincia = 4;
+}else
+if($fila['provincia']  == "Puntarenas"){
+   $numProvincia = 5;
+}else
+if($fila['provincia']  == "Guanacaste"){
+  $numProvincia = 6;
+}else
+if($fila['provincia']  == "Alajuela"){
+   $numProvincia = 7;
+}
+
+if($actividad == "Montaña"){
+   $innumActividad = 1;
+}else 
+if($actividad == "Playa"){
+  $innumActividad = 2;
+}else
+if($actividad == "Reserva"){
+  $innumActividad = 3;
+}
+
+
+if($fila['tipoLugar']  == "Montaña"){
+   $numActividad = 1;
+}else 
+if($fila['tipoLugar']  == "Playa"){
+  $numActividad = 2;
+}else
+if($fila['tipoLugar'] == "Reserva"){
+  $numActividad = 3;
+}
+
+if($acceso == "Caminando"){
+   $innumAcceso = 1;
+}else 
+if( $acceso == "Bicicleta"){
+  $innumAcceso = 2;
+}else
+if($acceso  == "Vehiculo"){
+  $innumAcceso = 3;
+}
+
+if($fila['tipoAcceso']  == "Caminando"){
+   $numAcceso = 1;
+}else 
+if( $fila['tipoAcceso'] == "Bicicleta"){
+  $numAcceso = 2;
+}else
+if($fila['tipoAcceso']  == "Vehiculo"){
+  $numAcceso = 3;
+}
+
+
+$menoscercano = sqrt(pow($numProvincia - $inprovincia ,2) + pow($numActividad  - $innumActividad,2) + pow($numAcceso -  $innumAcceso ,2));
+ 
+ if($flag == false && $flagfind == false){
+ $mascercano = $menoscercano;
+ $la =  $fila['latitud']; 
+ $lo =  $fila['longitud']; 
+   /* $ubicacion = $latitud+";"+$longitud;
+   array_push($array,$longitud);*/
+ $flag = true;
+ }
+ if(($mascercano > $menoscercano && $menoscercano > 0) && $flagfind = false){
+    $flagfind = false;
+    $la=   $fila['latitud']; 
+    $lo =  $fila['longitud'];
+     /* $ubicacion = $latitud+";"+$longitud;
+   array_push($array,$longitud);*/
+    $mascercano = $menoscercano;   
+ }
+
+if($mascercano== 0.000 || $menoscercano == 0.000){
+ echo $la = $fila['latitud']; 
+  echo  $lo =  $fila['longitud'];   
+  /* $ubicacion = $latitud+";"+$longitud;
+   array_push($array,$longitud);*/
+  $flagfind = true;
+}
+}
+  $latitu = $la;
+  $longitu =$lo;
+?>
+
+
+
+</script>
+     
             <div id="googleMap" style="width:100%;height:400px;"></div>
 
         </div>
@@ -81,6 +238,9 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
 
     <script type="text/javascript">
+     
+     //var  ubicacion = [10.65,-85.8];
+
         $(document).ready(function () {
             $('#sidebarCollapse').on('click', function () {
                 $('#sidebar').toggleClass('active');
@@ -88,18 +248,50 @@
             });
         });
 
+
+       function obtainPlace() {
+
+     var lati = "<?php echo $latitu;?>";
+   var long = "<?php echo $longitu;?>";
+
+ var l = parseFloat(lati);
+ var lo = parseFloat(long);
+           var mapProp = {
+                center: new google.maps.LatLng( l,lo),
+                zoom: 8,
+            };
+            var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+             
+             var place  = {
+                lat: l,
+                lng: lo
+                
+            };
+            var marke = new google.maps.Marker({position:place,map:map,title:"ubicacion"})
+    
+        }
+
         function myMap() {
-            var mapProp = {
+          var mapProp = {
                 center: new google.maps.LatLng(9.9372571, -84.7553369),
-                zoom: 5,
+                zoom: 8,
             };
             var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
         }
     </script>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUCb18wwYDgkfPwj4NI8V3WCFm7tMpL-0&callback=myMap"></script>
+<?php If (null != $_POST['Provincia'])
+{
+?>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUCb18wwYDgkfPwj4NI8V3WCFm7tMpL-0&callback=obtainPlace"></script>
 
+    <?php } ?>
+<?php If (null == $_POST['Provincia'])
+{
+?>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUCb18wwYDgkfPwj4NI8V3WCFm7tMpL-0&callback=myMap"></script>
 
+    <?php } ?>
 <style>
 /*
     DEMO STYLE
